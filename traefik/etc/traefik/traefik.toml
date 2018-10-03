@@ -1,0 +1,24 @@
+accessLogsFile = "/dev/stdout"
+defaultEntryPoints = ["http", "https"]
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+    [entryPoints.https.tls]
+
+[acme]
+email = "traefik@nucoder.io"
+storage = "/acme/acme.json"
+entryPoint = "https"
+onHostRule = true
+logging = true
+
+[docker]
+domain = "nucoder.io"
+exposedByDefault = false
+watch = true
+swarmmode = true
