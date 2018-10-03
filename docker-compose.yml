@@ -5,34 +5,21 @@ services:
     build:
       context: ./traefik
     image: traefik:latest
-    command: |-
-      --entryPoints="Name:http Address::80 Redirect.EntryPoint:https"
-      --entryPoints="Name:https Address::443 TLS"
-      --defaultentrypoints="http,https"
-      --accesslogsfile="/var/log/access.log"
-      --acme 
-      --acme.acmelogging="true"
-      --acme.email="traefik@nucoder.io"
-      --acme.entrypoint="https"
-      --acme.httpChallenge.entryPoint="http"
-      --acme.storage="/acme/acme.json"
-      --acme.onhostrule="true"
-      --docker
-      --docker.swarmmode
-      --docker.exposedByDefault=false
-      --docker.domain="nucoder.io"
-      --docker.watch
-      --web
     ports:
       - 80:80
       - 443:443
-      - 8080:8080
+    expose:
+      - 8080
     networks:
       - traefik-net
     volumes:
       - traefik_acme:/acme/
-      - traefik_logs:/var/log/access.log
       - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.port=8080"
+      - "traefik.backend=traefik-backend"
+      - "traefik.frontend.rule=Host:traefik.nucoder.io"
+      - "traefik.enable=true"
     deploy:
       mode: global
       placement:
@@ -50,6 +37,11 @@ services:
       - traefik-net
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.port=8080"
+      - "traefik.backend=visualizer-backend"
+      - "traefik.frontend.rule=Host:docker.nucoder.io"
+      - "traefik.enable=true"
     deploy:
       placement:
         constraints:
@@ -57,7 +49,6 @@ services:
 
 volumes:
   traefik_acme:
-  traefik_logs:
 
 networks:
   traefik-net:
