@@ -1,25 +1,20 @@
-version: '3'
+version: '3.3'
 
 services:
   traefik:
-    build:
-      context: ./traefik
     image: traefik:latest
+    configs:
+      - source: traefik_config
+        target: /etc/traefik/traefik.toml
     ports:
       - 80:80
       - 443:443
-    expose:
-      - 8080
+      - 8080:8080
     networks:
       - traefik-net
     volumes:
       - traefik_acme:/acme/
       - /var/run/docker.sock:/var/run/docker.sock
-    labels:
-      - "traefik.port=8080"
-      - "traefik.backend=traefik-backend"
-      - "traefik.frontend.rule=Host:traefik.nucoder.io"
-      - "traefik.enable=true"
     deploy:
       mode: global
       placement:
@@ -37,15 +32,19 @@ services:
       - traefik-net
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    labels:
-      - "traefik.port=8080"
-      - "traefik.backend=visualizer-backend"
-      - "traefik.frontend.rule=Host:docker.nucoder.io"
-      - "traefik.enable=true"
     deploy:
+      labels:
+        - "traefik.port=8080"
+        - "traefik.backend=visualizer-backend"
+        - "traefik.frontend.rule=Host:docker.nucoder.io"
+        - "traefik.enable=true"
       placement:
         constraints:
           - node.role == manager
+
+configs:
+  traefik_config:
+    file: ./traefik/etc/traefik/traefik.toml
 
 volumes:
   traefik_acme:
