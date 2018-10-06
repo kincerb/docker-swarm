@@ -117,4 +117,4 @@ secrets/*
 docker/mariadb/secrets/*
 
 Pipfile
-postgres.env
+postgresql.env
