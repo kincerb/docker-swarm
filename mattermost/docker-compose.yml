@@ -1,40 +1,53 @@
 version: '3'
 
 services:
-  postgres_primary:
+  db_primary:
     image: crunchydata/crunchy-postgres:centos7-10.5-2.1.0
     environment:
       - PG_MODE=primary
     env_file:
-      - postgresql.env
+      - mattermost.env
     volumes:
-      - pg-primary-vol:/pgdata
+      - db_primary:/pgdata
     networks:
-      - postgresql
+      - mm-db
     deploy:
       placement:
         constraints:
           - node.labels.type == primary
           - node.role == worker
 
-  postgres_replica:
+  db_replica:
     image: crunchydata/crunchy-postgres:centos7-10.5-2.1.0
     environment:
       - PG_MODE=replica
     env_file:
-      - postgresql.env
+      - mattermost.env
     volumes:
-      - pg-replica-vol:/pgdata
+      - db_replica:/pgdata
     networks:
-      - postgresql
+      - mm-db
     deploy:
       placement:
         constraints:
           - node.labels.type != primary
           - node.role == worker
 
+  app:
+    build:
+      context: .
+    restart: unless-stopped
+    volumes:
+      - ./volumes/app/mattermost/config:/mattermost/config:rw
+      - ./volumes/app/mattermost/data:/mattermost/data:rw
+      - ./volumes/app/mattermost/logs:/mattermost/logs:rw
+      - ./volumes/app/mattermost/plugins:/mattermost/plugins:rw
+      - /etc/localtime:/etc/localtime:ro
+    env_file:
+      - ./mattermost.env
+
 networks:
-  postgresql
+  mm-db
 
 volumes:
   pg-primary-vol:
