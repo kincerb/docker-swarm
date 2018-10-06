@@ -1,8 +1,8 @@
 version: '3'
 
 services:
-  primary:
-    image: crunchydata/crunchy-postgres:centos7-10.3-1.8.2
+  postgres_primary:
+    image: crunchydata/crunchy-postgres:centos7-10.5-2.1.0
     environment:
       - PG_MODE=primary
     env_file:
@@ -17,8 +17,8 @@ services:
           - node.labels.type == primary
           - node.role == worker
 
-  replica:
-    image: crunchydata/crunchy-postgres:centos7-10.3-1.8.2
+  postgres_replica:
+    image: crunchydata/crunchy-postgres:centos7-10.5-2.1.0
     environment:
       - PG_MODE=replica
     env_file:
