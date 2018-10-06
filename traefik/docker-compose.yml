@@ -44,7 +44,7 @@ services:
 
 configs:
   traefik_config:
-    file: ./traefik/etc/traefik/traefik.toml
+    file: ./etc/traefik/traefik.toml
 
 volumes:
   traefik_acme:

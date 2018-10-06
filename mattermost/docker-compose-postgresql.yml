@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  primary:
+    image: crunchydata/crunchy-postgres:centos7-10.3-1.8.2
+    environment:
+      - PG_MODE=primary
+    env_file:
+      - postgresql.env
+    volumes:
+      - pg-primary-vol:/pgdata
+    networks:
+      - postgresql
+    deploy:
+      placement:
+        constraints:
+          - node.labels.type == primary
+          - node.role == worker
+
+  replica:
+    image: crunchydata/crunchy-postgres:centos7-10.3-1.8.2
+    environment:
+      - PG_MODE=replica
+    env_file:
+      - postgresql.env
+    volumes:
+      - pg-replica-vol:/pgdata
+    networks:
+      - postgresql
+    deploy:
+      placement:
+        constraints:
+          - node.labels.type != primary
+          - node.role == worker
+
+networks:
+  postgresql
+
+volumes:
+  pg-primary-vol:
+  pg-replica-vol:
