@@ -20,11 +20,11 @@ services:
       placement:
         constraints:
           - node.role == manager
-      update_config:
-        parallelism: 1
-        delay: 10s
       restart_policy:
         condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 20s
 
   visualizer:
     image: dockersamples/visualizer:latest
@@ -48,6 +48,7 @@ configs:
 
 volumes:
   traefik_acme:
+    driver: rexray
 
 networks:
   traefik-net:
