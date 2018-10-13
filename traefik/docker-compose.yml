@@ -13,7 +13,7 @@ services:
     networks:
       - traefik-net
     volumes:
-      - traefik_acme:/acme/
+      - traefik-acme:/acme/
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
       mode: global
@@ -47,8 +47,10 @@ configs:
     file: ./etc/traefik/traefik.toml
 
 volumes:
-  traefik_acme:
+  traefik-acme:
     driver: rexray
+    driver_opts:
+      size: 2
 
 networks:
   traefik-net:
