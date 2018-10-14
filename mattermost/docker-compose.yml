@@ -8,10 +8,14 @@ services:
     volumes:
       - mattermost-db:/var/lib/postgresql/data
       - /etc/localtime:/etc/localtime:ro
+    secrets:
+      - mattermost_user
+      - mattermost_password
+      - mattermost_db
     environment:
-      - POSTGRES_USER=mmuser
-      - POSTGRES_PASSWORD=mmuser_password
-      - POSTGRES_DB=mattermost
+      - POSTGRES_USER=/run/secrets/mattermost_user
+      - POSTGRES_PASSWORD=/run/secrets/mattermost_password
+      - POSTGRES_DB=/run/secrets/mattermost_db
 
   app:
     build:
@@ -22,10 +26,14 @@ services:
     volumes:
       - mattermost-app:/mattermost
       - /etc/localtime:/etc/localtime:ro
+    secrets:
+      - mattermost_user
+      - mattermost_password
+      - mattermost_db
     environment:
-      - MM_USERNAME=mmuser
-      - MM_PASSWORD=mmuser_password
-      - MM_DBNAME=mattermost
+      - MM_USERNAME=/run/secrets/mattermost_user
+      - MM_PASSWORD=/run/secrets/mattermost_password
+      - MM_DBNAME=/run/secrets/mattermost_db
     deploy:
       labels:
         - "traefik.port=8000"
@@ -47,4 +55,11 @@ networks:
   traefik-net:
     external: true
 
+secrets:
+  mattermost_user:
+    external: true
+  mattermost_password:
+    external: true
+  mattermost_db:
+    external: true
 
