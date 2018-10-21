@@ -5,12 +5,34 @@ generate_salt() {
   cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 48 | head -n 1
 }
 
+# usage: file_env VAR [DEFAULT]
+#    ie: file_env 'MM_PASSWORD' 'example'
+# (will allow for "$MM_PASSWORD_FILE" to fill in the value of
+#  "$MM_PASSWORD" from a file, especially for Docker's secrets feature)
+file_env() {
+	local var="$1"
+	local fileVar="${var}_FILE"
+	local def="${2:-}"
+	if [ "${!var:-}" ] && [ "${!fileVar:-}" ]; then
+		echo >&2 "error: both $var and $fileVar are set (but are exclusive)"
+		exit 1
+	fi
+	local val="$def"
+	if [ "${!var:-}" ]; then
+		val="${!var}"
+	elif [ "${!fileVar:-}" ]; then
+		val="$(< "${!fileVar}")"
+	fi
+	export "$var"="$val"
+	unset "$fileVar"
+}
+
 # Read environment variables or set default values
 DB_HOST=${DB_HOST:-db}
 DB_PORT_NUMBER=${DB_PORT_NUMBER:-5432}
-MM_USERNAME=${MM_USERNAME:-mmuser}
-MM_PASSWORD=${MM_PASSWORD:-mmuser_password}
-MM_DBNAME=${MM_DBNAME:-mattermost}
+file_env MM_USERNAME mmuser
+file_env MM_PASSWORD mmuser_password
+file_env MM_DBNAME mattermost
 MM_CONFIG=${MM_CONFIG:-/mattermost/config/config.json}
 
 if [ "${1:0:1}" = '-' ]; then

@@ -1,8 +1,8 @@
-version: '3'
+version: '3.1'
 
 services:
   db:
-    build: db
+    image: postgres
     read_only: true
     restart: unless-stopped
     volumes:
@@ -13,9 +13,9 @@ services:
       - mattermost_password
       - mattermost_db
     environment:
-      - POSTGRES_USER=/run/secrets/mattermost_user
-      - POSTGRES_PASSWORD=/run/secrets/mattermost_password
-      - POSTGRES_DB=/run/secrets/mattermost_db
+      - POSTGRES_USER_FILE=/run/secrets/mattermost_user
+      - POSTGRES_PASSWORD_FILE=/run/secrets/mattermost_password
+      - POSTGRES_DB_FILE=/run/secrets/mattermost_db
 
   app:
     build:
