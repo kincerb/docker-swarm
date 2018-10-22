@@ -18,8 +18,7 @@ services:
       - POSTGRES_DB_FILE=/run/secrets/mattermost_db
 
   app:
-    build:
-      context: app
+    image: kincerb/mattermost:5.3.1
     restart: unless-stopped
     networks:
       - traefik-net
