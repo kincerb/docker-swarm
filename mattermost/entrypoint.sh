@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Function to generate a random salt
 generate_salt() {
@@ -28,12 +28,12 @@ file_env() {
 }
 
 # Read environment variables or set default values
-DB_HOST=${DB_HOST:-db}
-DB_PORT_NUMBER=${DB_PORT_NUMBER:-5432}
-file_env MM_USERNAME mmuser
-file_env MM_PASSWORD mmuser_password
-file_env MM_DBNAME mattermost
-MM_CONFIG=${MM_CONFIG:-/mattermost/config/config.json}
+DB_HOST="${DB_HOST:-db}"
+DB_PORT_NUMBER="${DB_PORT_NUMBER:-5432}"
+file_env 'MM_USERNAME' 'mmuser'
+file_env 'MM_PASSWORD' 'mmuser_password'
+file_env 'MM_DBNAME' 'mattermost'
+MM_CONFIG="${MM_CONFIG:-/mattermost/config/config.json}"
 
 if [ "${1:0:1}" = '-' ]; then
     set -- mattermost "$@"
