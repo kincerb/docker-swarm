@@ -4,7 +4,7 @@ services:
   db:
     image: postgres
     networks:
-      - traefik-net
+      - internal
     volumes:
       - mattermost-db:/var/lib/postgresql/data
       - /etc/localtime:/etc/localtime:ro
@@ -17,6 +17,8 @@ services:
       - POSTGRES_PASSWORD_FILE=/run/secrets/mattermost_password
       - POSTGRES_DB_FILE=/run/secrets/mattermost_db
     deploy:
+      labels:
+        - "traefik.enable=false"
       placement:
         constraints:
           - node.role == worker
@@ -31,6 +33,7 @@ services:
     depends_on:
       - db
     networks:
+      - internal
       - traefik-net
     volumes:
       - mattermost-app:/mattermost
@@ -46,7 +49,7 @@ services:
     deploy:
       labels:
         - "traefik.port=8000"
-        - "traefik.backend=mattermost-backend"
+        - "traefik.backend=mattermost"
         - "traefik.frontend.rule=Host:mattermost.nucoder.io"
         - "traefik.enable=true"
       placement:
@@ -69,6 +72,9 @@ volumes:
       size: 2
 
 networks:
+  internal:
+    external: false
+    driver: overlay
   traefik-net:
     external: true
 
