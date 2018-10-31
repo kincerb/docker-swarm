@@ -51,4 +51,4 @@ CMD ["mattermost"]
 # Expose port 8000 of the container
 EXPOSE 8000
 
-VOLUME ["/mattermost/data", "/mattermost/logs", "/mattermost/config", "/mattermost/plugins", "/mattermost/client/plugins"]
+VOLUME /mattermost
