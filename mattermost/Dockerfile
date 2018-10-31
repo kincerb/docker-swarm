@@ -46,7 +46,7 @@ COPY --chown=mattermost:mattermost entrypoint.sh /
 RUN chmod 750 /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 WORKDIR /mattermost
-CMD ["mattermost"]
+CMD ["/mattermost/bin/mattermost"]
 
 # Expose port 8000 of the container
 EXPOSE 8000
