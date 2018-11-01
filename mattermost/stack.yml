@@ -7,7 +7,6 @@ services:
       - internal
     volumes:
       - mattermost-db:/var/lib/postgresql/data
-      - /etc/localtime:/etc/localtime:ro
     secrets:
       - mattermost_user
       - mattermost_password
@@ -29,7 +28,7 @@ services:
         window: 10s
 
   app:
-    image: kincerb/mattermost:5.3.1
+    image: kincerb/mattermost:5.4.0
     depends_on:
       - db
     networks:
@@ -37,7 +36,6 @@ services:
       - traefik-net
     volumes:
       - mattermost-app:/mattermost
-      - /etc/localtime:/etc/localtime:ro
     secrets:
       - mattermost_user
       - mattermost_password
@@ -46,6 +44,8 @@ services:
       - MM_USERNAME=/run/secrets/mattermost_user
       - MM_PASSWORD=/run/secrets/mattermost_password
       - MM_DBNAME=/run/secrets/mattermost_db
+      - DB_HOST=db
+      - DB_PORT_NUMBER=5432
     deploy:
       labels:
         - "traefik.port=8000"

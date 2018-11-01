@@ -73,20 +73,20 @@ if [ "$1" = 'mattermost' ]; then
     jq '.SqlSettings.DriverName = "postgres"' $MM_CONFIG > $MM_CONFIG.tmp && mv $MM_CONFIG.tmp $MM_CONFIG
     jq '.SqlSettings.AtRestEncryptKey = "'$(generate_salt)'"' $MM_CONFIG > $MM_CONFIG.tmp && mv $MM_CONFIG.tmp $MM_CONFIG
     jq '.PluginSettings.Directory = "/mattermost/plugins/"' $MM_CONFIG > $MM_CONFIG.tmp && mv $MM_CONFIG.tmp $MM_CONFIG
-
-    # Configure database access
-    if [[ -z "$MM_SQLSETTINGS_DATASOURCE" ]]
-    then
-      echo -ne "Configure database connection..."
-      # URLEncode the password, allowing for special characters
-      ENCODED_PASSWORD=$(printf %s $MM_PASSWORD | jq -s -R -r @uri)
-      export MM_SQLSETTINGS_DATASOURCE="postgres://$MM_USERNAME:$ENCODED_PASSWORD@$DB_HOST:$DB_PORT_NUMBER/$MM_DBNAME?sslmode=disable&connect_timeout=10"
-      echo OK
-    else
-      echo "Using existing database connection"
-    fi
   else
     echo "Using existing config file" $MM_CONFIG
+  fi
+
+  # Configure database access
+  if [[ -z "$MM_SQLSETTINGS_DATASOURCE" && ! -z "$MM_USERNAME" && ! -z "$MM_PASSWORD" ]]
+  then
+    echo -ne "Configure database connection..."
+    # URLEncode the password, allowing for special characters
+    ENCODED_PASSWORD=$(printf %s $MM_PASSWORD | jq -s -R -r @uri)
+    export MM_SQLSETTINGS_DATASOURCE="postgres://$MM_USERNAME:$ENCODED_PASSWORD@$DB_HOST:$DB_PORT_NUMBER/$MM_DBNAME?sslmode=disable&connect_timeout=10"
+    echo OK
+  else
+    echo "Using existing database connection"
   fi
 
   # Wait another second for the database to be properly started.

@@ -114,7 +114,8 @@ media/*
 secrets/*
 
 # Docker stuff:
-docker/mariadb/secrets/*
+mattermost/config/config.json
+
 
 Pipfile
 mattermost/mattermost.env
