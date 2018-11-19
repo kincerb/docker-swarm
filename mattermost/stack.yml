@@ -2,19 +2,19 @@ version: '3.3'
 
 services:
   db:
-    image: postgres
+    image: mariadb
     networks:
       - internal
     volumes:
-      - mattermost-db:/var/lib/postgresql/data
+      - mattermost-db:/var/lib/mysql
     secrets:
       - mattermost_user
       - mattermost_password
       - mattermost_db
     environment:
-      - POSTGRES_USER_FILE=/run/secrets/mattermost_user
-      - POSTGRES_PASSWORD_FILE=/run/secrets/mattermost_password
-      - POSTGRES_DB_FILE=/run/secrets/mattermost_db
+      - MYSQL_USER_FILE=/run/secrets/mattermost_user
+      - MYSQL_PASSWORD_FILE=/run/secrets/mattermost_password
+      - MYSQL_DATABASE_FILE=/run/secrets/mattermost_db
     deploy:
       labels:
         - "traefik.enable=false"
@@ -45,7 +45,7 @@ services:
       - MM_PASSWORD=/run/secrets/mattermost_password
       - MM_DBNAME=/run/secrets/mattermost_db
       - DB_HOST=db
-      - DB_PORT_NUMBER=5432
+      - DB_PORT_NUMBER=3306
     deploy:
       labels:
         - "traefik.port=8000"
