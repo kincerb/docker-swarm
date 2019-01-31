@@ -11,10 +11,12 @@ services:
       - mattermost_user
       - mattermost_password
       - mattermost_db
+      - mattermost_db_root_password
     environment:
       - MYSQL_USER_FILE=/run/secrets/mattermost_user
       - MYSQL_PASSWORD_FILE=/run/secrets/mattermost_password
       - MYSQL_DATABASE_FILE=/run/secrets/mattermost_db
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mattermost_db_root_password
     deploy:
       labels:
         - "traefik.enable=false"
@@ -28,7 +30,7 @@ services:
         window: 10s
 
   app:
-    image: kincerb/mattermost:5.6.2
+    image: kincerb/mattermost:5.7.0
     depends_on:
       - db
     networks:
@@ -41,9 +43,9 @@ services:
       - mattermost_password
       - mattermost_db
     environment:
-      - MM_USERNAME=/run/secrets/mattermost_user
-      - MM_PASSWORD=/run/secrets/mattermost_password
-      - MM_DBNAME=/run/secrets/mattermost_db
+      - MM_USERNAME_FILE=/run/secrets/mattermost_user
+      - MM_PASSWORD_FILE=/run/secrets/mattermost_password
+      - MM_DBNAME_FILE=/run/secrets/mattermost_db
       - DB_HOST=db
       - DB_PORT_NUMBER=3306
     deploy:
@@ -85,4 +87,5 @@ secrets:
     external: true
   mattermost_db:
     external: true
-
+  mattermost_db_root_password:
+    external: true

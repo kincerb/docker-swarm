@@ -23,34 +23,33 @@ file_env() {
 	elif [ "${!fileVar:-}" ]; then
 		val="$(< "${!fileVar}")"
 	fi
-	export "$var"="$val"
+	export "${var}"="${val}"
 	unset "$fileVar"
 }
 
 # Read environment variables or set default values
 DB_HOST="${DB_HOST:-db}"
-DB_PORT_NUMBER="${DB_PORT_NUMBER:-5432}"
+DB_PORT_NUMBER="${DB_PORT_NUMBER:-3306}"
 file_env 'MM_USERNAME' 'mmuser'
 file_env 'MM_PASSWORD' 'mmuser_password'
 file_env 'MM_DBNAME' 'mattermost'
+#file_env 'MM_SQLSETTINGS_DATASOURCE' 'mmuser:mmuser_password@tcp(db:3306)/mattermost?charset=utf8mb4,utf8&readTimeout=30s&writeTimeout=30s'
 MM_CONFIG="${MM_CONFIG:-/mattermost/config/config.json}"
 
-if [ "${1:0:1}" = '-' ]; then
+if [ "${1:0:1}" == '-' ]; then
     set -- mattermost "$@"
 fi
 
-if [ "$1" = 'mattermost' ]; then
+if [[ "$1" == *mattermost* ]]; then
   # Check CLI args for a -config option
-  for ARG in $@;
-  do
+  for ARG in $@; do
       case "$ARG" in
           -config=*)
               MM_CONFIG=${ARG#*=};;
       esac
   done
 
-  if [ ! -f $MM_CONFIG ]
-  then
+  if [ ! -f "${MM_CONFIG}" ]; then
     # If there is no configuration file, create it with some default values
     echo "No configuration file" $MM_CONFIG
     echo "Creating a new one"
@@ -78,12 +77,10 @@ if [ "$1" = 'mattermost' ]; then
   fi
 
   # Configure database access
-  if [[ -z "$MM_SQLSETTINGS_DATASOURCE" && ! -z "$MM_USERNAME" && ! -z "$MM_PASSWORD" ]]
-  then
+  if [[ -z "${MM_SQLSETTINGS_DATASOURCE}" && ! -z "${MM_USERNAME}" && ! -z "${MM_PASSWORD}" ]]; then
     echo -ne "Configure database connection..."
     # URLEncode the password, allowing for special characters
-    ENCODED_PASSWORD=$(printf %s $MM_PASSWORD | jq -s -R -r @uri)
-    export MM_SQLSETTINGS_DATASOURCE="postgres://$MM_USERNAME:$ENCODED_PASSWORD@$DB_HOST:$DB_PORT_NUMBER/$MM_DBNAME?sslmode=disable&connect_timeout=10"
+    export MM_SQLSETTINGS_DATASOURCE="${MM_USERNAME}:${MM_PASSWORD}@tcp(${DB_HOST}:${DB_PORT_NUMBER})/${MM_DBNAME}?charset=utf8mb4,utf8&readTimeout=30s&writeTimeout=30s"
     echo OK
   else
     echo "Using existing database connection"
@@ -92,7 +89,6 @@ if [ "$1" = 'mattermost' ]; then
   # Wait another second for the database to be properly started.
   # Necessary to avoid "panic: Failed to open sql connection pq: the database system is starting up"
   sleep 1
-
   echo "Starting mattermost"
 fi
 

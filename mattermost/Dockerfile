@@ -2,13 +2,13 @@ FROM alpine:3.8
 
 # Some ENV variables
 ENV PATH="/mattermost/bin:${PATH}"
-ENV MM_VERSION=5.6.2
+ENV MM_VERSION=5.7.0
 
 # Build argument to set Mattermost edition
 ARG edition=enterprise
 ARG PUID=2000
 ARG PGID=2000
-ARG MM_BINARY=/mattermost/bin/mattermost
+ARG MM_BINARY=
 
 
 # Install some needed packages
@@ -26,7 +26,7 @@ RUN apk add --no-cache \
 	&& rm -rf /tmp/*
 
 # Get Mattermost
-RUN mkdir -p /mattermost/data \
+RUN mkdir -p /mattermost \
     && if [ ! -z "$MM_BINARY" ]; then curl $MM_BINARY | tar -xvz ; \
       elif [ "$edition" = "team" ] ; then curl https://releases.mattermost.com/$MM_VERSION/mattermost-team-$MM_VERSION-linux-amd64.tar.gz | tar -xvz ; \
       else curl https://releases.mattermost.com/$MM_VERSION/mattermost-$MM_VERSION-linux-amd64.tar.gz | tar -xvz ; fi \
@@ -46,7 +46,7 @@ COPY --chown=mattermost:mattermost entrypoint.sh /
 RUN chmod 750 /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 WORKDIR /mattermost
-CMD ["/mattermost/bin/mattermost"]
+CMD ["mattermost"]
 
 # Expose port 8000 of the container
 EXPOSE 8000
