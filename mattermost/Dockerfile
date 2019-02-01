@@ -39,7 +39,7 @@ RUN mkdir -p /mattermost \
 USER mattermost
 
 #Healthcheck to make sure container is ready
-HEALTHCHECK CMD curl --fail http://localhost:8000 || exit 1
+HEALTHCHECK CMD curl --fail http://localhost:8000 || exit 0
 
 # Configure entrypoint and command
 COPY --chown=mattermost:mattermost entrypoint.sh /

@@ -92,4 +92,5 @@ if [[ "$1" == *mattermost* ]]; then
   echo "Starting mattermost"
 fi
 
+# exec "/bin/bash -c while true; do sleep 600; done"
 exec "$@"
