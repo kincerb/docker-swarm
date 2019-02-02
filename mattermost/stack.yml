@@ -3,10 +3,10 @@ version: '3.3'
 services:
   db:
     image: mariadb
-    networks:
-      - internal
     volumes:
       - mattermost-db:/var/lib/mysql
+    networks:
+      - internal
     secrets:
       - mattermost_user
       - mattermost_password
@@ -18,8 +18,6 @@ services:
       - MYSQL_DATABASE_FILE=/run/secrets/mattermost_db
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/mattermost_db_root_password
     deploy:
-      labels:
-        - "traefik.enable=false"
       placement:
         constraints:
           - node.role == worker
@@ -50,10 +48,11 @@ services:
       - DB_PORT_NUMBER=3306
     deploy:
       labels:
+        - "traefik.docker.network=traefik-net"
+        - "traefik.enable=true"
         - "traefik.port=8000"
         - "traefik.backend=mattermost"
         - "traefik.frontend.rule=Host:mattermost.nucoder.io"
-        - "traefik.enable=true"
       placement:
         constraints:
           - node.role == worker
@@ -75,8 +74,8 @@ volumes:
 
 networks:
   internal:
-    external: false
     driver: overlay
+    external: false
   traefik-net:
     external: true
 
