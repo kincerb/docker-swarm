@@ -52,7 +52,7 @@ services:
         - "traefik.enable=true"
         - "traefik.port=8000"
         - "traefik.backend=mattermost"
-        - "traefik.frontend.rule=Host:mattermost.nucoder.io"
+        - "traefik.frontend.rule=Host:mattermost.devslash.me"
       placement:
         constraints:
           - node.role == worker

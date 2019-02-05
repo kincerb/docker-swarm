@@ -35,7 +35,7 @@ services:
       labels:
         - "traefik.port=8080"
         - "traefik.backend=visualizer-backend"
-        - "traefik.frontend.rule=Host:docker.nucoder.io"
+        - "traefik.frontend.rule=Host:docker.devslash.me"
         - "traefik.enable=true"
       placement:
         constraints:

@@ -11,7 +11,7 @@ defaultEntryPoints = ["http", "https"]
     [entryPoints.https.tls]
 
 [acme]
-email = "traefik@nucoder.io"
+email = "traefik@devslash.me"
 storage = "/acme/acme.json"
 entryPoint = "https"
 onHostRule = true
@@ -21,7 +21,7 @@ logging = true
   entryPoint = "http"
 
 [docker]
-domain = "nucoder.io"
+domain = "devslash.me"
 exposedByDefault = false
 watch = true
 swarmmode = true

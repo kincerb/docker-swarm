@@ -2,10 +2,22 @@ version: '3.3'
 
 services:
   ghost:
-    image: ghost:1-alpine
-    restart: always
-    ports:
-      - 8080:2368
+    image: ghost:latest
+    deploy:
+      labels:
+        - "traefik.docker.network=traefik-net"
+        - "traefik.enable=true"
+        - "traefik.port=2368"
+        - "traefik.backend=ghost"
+        - "traefik.frontend.rule:Host:blog.nucoder.io"
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
     environment:
       # see https://docs.ghost.org/docs/config#section-running-ghost-with-config-env-variables
       database__client: mysql
