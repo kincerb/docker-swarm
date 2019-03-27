@@ -1,0 +1,150 @@
+version: '3.3'
+
+services:
+  mssql:
+    image: bitwarden/mssql:1.16.0
+    volumes:
+      - ../mssql/data:/var/opt/mssql/data
+      - ../mssql/backups:/etc/bitwarden/mssql/backups
+    env_file:
+      - mssql.env
+      - ../env/mssql.override.env
+    networks:
+      - internal
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+
+  web:
+    image: bitwarden/web:1.22.0
+    container_name: bitwarden-web
+    volumes:
+      - ../web:/etc/bitwarden/web
+    networks:
+      - internal
+      - traefik-net
+    deploy:
+      labels:
+        - "traefik.docker.network=traefik-net"
+        - "traefik.enable=true"
+        - "traefik.port=80"
+        - "traefik.backend=bitwarden"
+        - "traefik.frontend.rule=Host:bitwarden.devslash.me;Path: /"
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+
+  attachments:
+    image: bitwarden/attachments:1.16.0
+    volumes:
+      - ../core/attachments:/etc/bitwarden/core/attachments
+    networks:
+      - internal
+      - traefik-net
+    deploy:
+      labels:
+        - "traefik.docker.network=traefik-net"
+        - "traefik.enable=true"
+        - "traefik.port=80"
+        - "traefik.backend=bitwarden"
+        - "traefik.frontend.rule=Host:bitwarden.devslash.me;PathPrefix: /attachments"
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+
+  api:
+    image: bitwarden/api:1.16.0
+    volumes:
+      - ../core:/etc/bitwarden/core
+    env_file:
+      - global.env
+      - ../env/global.override.env
+    networks:
+      - internal
+      - traefik-net
+    deploy:
+      labels:
+        - "traefik.docker.network=traefik-net"
+        - "traefik.enable=true"
+        - "traefik.port=80"
+        - "traefik.backend=bitwarden"
+        - "traefik.frontend.rule=Host:bitwarden.devslash.me;PathPrefix: /api"
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+
+  identity:
+    image: bitwarden/identity:1.16.0
+    volumes:
+      - ../identity:/etc/bitwarden/identity
+      - ../core:/etc/bitwarden/core
+    env_file:
+      - global.env
+      - ../env/global.override.env
+    networks:
+      - internal
+      - traefik-net
+    deploy:
+      labels:
+        - "traefik.docker.network=traefik-net"
+        - "traefik.enable=true"
+        - "traefik.port=80"
+        - "traefik.backend=bitwarden"
+        - "traefik.frontend.rule=Host:bitwarden.devslash.me;PathPrefix: /identity"
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+
+  icons:
+    image: bitwarden/icons:1.16.0
+    networks:
+      - internal
+      - traefik-net
+    deploy:
+      labels:
+        - "traefik.docker.network=traefik-net"
+        - "traefik.enable=true"
+        - "traefik.port=80"
+        - "traefik.backend=bitwarden"
+        - "traefik.frontend.rule=Host:bitwarden.devslash.me;PathPrefix: /icons"
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+
+networks:
+  internal:
+    driver: overlay
+    external: false
+  traefik-net:
+    external: true
