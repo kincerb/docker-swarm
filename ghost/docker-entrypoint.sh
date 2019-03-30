@@ -24,13 +24,9 @@ file_env() {
 }
 
 # Read environment variables or set default values
-DB_HOST="${DB_HOST:-db}"
-DB_PORT_NUMBER="${DB_PORT_NUMBER:-3306}"
-file_env 'MM_USERNAME' 'mmuser'
-file_env 'MM_PASSWORD' 'mmuser_password'
-file_env 'MM_DBNAME' 'mattermost'
-#file_env 'MM_SQLSETTINGS_DATASOURCE' 'mmuser:mmuser_password@tcp(db:3306)/mattermost?charset=utf8mb4,utf8&readTimeout=30s&writeTimeout=30s'
-MM_CONFIG="${MM_CONFIG:-/mattermost/config/config.json}"
+file_env 'database__connection__user' 'nah'
+file_env 'database__connection__password' 'nah'
+file_env 'database__connection__database' 'nah'
 
 # allow the container to be started with `--user`
 if [[ "$*" == node*current/index.js* ]] && [ "$(id -u)" = '0' ]; then
