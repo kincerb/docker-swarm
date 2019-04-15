@@ -4,11 +4,12 @@ services:
   traefik:
     image: traefik:latest
     configs:
-      - source: traefik_config
+      - source: traefik_config_v2
         target: /etc/traefik/traefik.toml
     ports:
       - 80:80
       - 443:443
+      - 8080:8080
     networks:
       - traefik-net
     volumes:
@@ -42,8 +43,8 @@ services:
           - node.role == manager
 
 configs:
-  traefik_config:
-    file: ./etc/traefik/traefik.toml
+  traefik_config_v2:
+    external: true
 
 volumes:
   traefik-acme:

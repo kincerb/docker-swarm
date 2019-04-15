@@ -1,42 +1,6 @@
 version: '3.3'
 
 services:
-  app:
-    image: kincerb/ghost:latest
-    volumes:
-      - ghost-content:/var/lib/ghost/content
-    networks:
-      - internal
-      - traefik-net
-    secrets:
-      - ghost_db_user
-      - ghost_db
-      - ghost_db_user_pass
-      - ghost_url
-    environment:
-      - NODE_ENV=production
-      - url=https://blog.devslash.me
-      - database__client=mysql
-      - database__connection__host=db
-      - database__connection__user_FILE=/run/secrets/ghost_db_user
-      - database__connection__password_FILE=/run/secrets/ghost_db_user_pass
-      - database__connection__database_FILE=/run/secrets/ghost_db
-    deploy:
-      labels:
-        - "traefik.docker.network=traefik-net"
-        - "traefik.enable=true"
-        - "traefik.port=2368"
-        - "traefik.backend=ghost"
-        - "traefik.frontend.rule:Host:blog.devslash.me"
-      placement:
-        constraints:
-          - node.role == worker
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 10s
-
   db:
     image: mariadb
     volumes:
@@ -54,6 +18,45 @@ services:
       - MYSQL_PASSWORD_FILE=/run/secrets/ghost_db_user_pass
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/ghost_db_root_pass
     deploy:
+      placement:
+        constraints:
+          - node.role == worker
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+
+  app:
+    image: kincerb/ghost:latest
+    depends_on:
+      - db
+    volumes:
+      - ghost-content:/var/lib/ghost/content
+    networks:
+      - internal
+      - traefik-net
+    secrets:
+      - ghost_db_user
+      - ghost_db
+      - ghost_db_user_pass
+      - ghost_url
+    environment:
+      - NODE_ENV=production
+      - url=https://blog.nucoder.io
+      - database__client=mysql
+      - database__connection__host=db
+      - database__connection__user_FILE=/run/secrets/ghost_db_user
+      - database__connection__password_FILE=/run/secrets/ghost_db_user_pass
+      - database__connection__database_FILE=/run/secrets/ghost_db
+    deploy:
+      labels:
+        - "traefik.domain=nucoder.io"
+        - "traefik.backend=blog"
+        - "traefik.docker.network=traefik-net"
+        - "traefik.enable=true"
+        - "traefik.port=2368"
+        - "traefik.frontend.rule:Host:blog.nucoder.io"
       placement:
         constraints:
           - node.role == worker

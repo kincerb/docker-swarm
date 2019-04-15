@@ -1,27 +1,40 @@
 accessLogsFile = "/dev/stdout"
 defaultEntryPoints = ["http", "https"]
 
+[log]
+  filePath = "/acme/traefik.log"
+
 [entryPoints]
   [entryPoints.http]
-  address = ":80"
+    address = ":80"
     [entryPoints.http.redirect]
-    entryPoint = "https"
+      entryPoint = "https"
   [entryPoints.https]
-  address = ":443"
+    address = ":443"
     [entryPoints.https.tls]
+  [entryPoints.metrics]
+    address = ":8080"
+    [entryPoints.metrics.auth]
+      [entryPoints.metrics.auth.basic]
+        users = ["admin:$apr1$KHY0iGCR$bt6nCOlg0IIJAUVdYoJTa1"]
+
+[api]
+  entryPoint = "metrics"
 
 [acme]
-email = "traefik@devslash.me"
-storage = "/acme/acme.json"
-entryPoint = "https"
-onHostRule = true
-logging = true
+  email = "traefik@devslash.me"
+  storage = "/acme/acme.json"
+  entryPoint = "https"
+  onHostRule = true
+  logging = true
 
 [acme.httpChallenge]
   entryPoint = "http"
 
+[retry]
+
 [docker]
-domain = "devslash.me"
-exposedByDefault = false
-watch = true
-swarmmode = true
+  domain = "devslash.me"
+  exposedByDefault = false
+  watch = true
+  swarmmode = true
