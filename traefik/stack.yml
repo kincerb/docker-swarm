@@ -16,6 +16,11 @@ services:
       - traefik-acme:/acme/
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
+      labels:
+        - "traefik.backend=traefik"
+        - "traefik.port=8080"
+        - "traefik.frontend.rule=Host:traefik.devslash.me"
+        - "traefik.enable=true"
       mode: global
       placement:
         constraints:
@@ -35,7 +40,6 @@ services:
     deploy:
       labels:
         - "traefik.port=8080"
-        - "traefik.backend=visualizer-backend"
         - "traefik.frontend.rule=Host:docker.devslash.me"
         - "traefik.enable=true"
       placement:
