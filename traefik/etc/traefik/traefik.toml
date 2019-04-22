@@ -1,8 +1,6 @@
 accessLogsFile = "/dev/stdout"
 defaultEntryPoints = ["http", "https"]
-
-[log]
-  filePath = "/acme/traefik.log"
+logLevel = "ERROR"
 
 [entryPoints]
   [entryPoints.http]
@@ -30,8 +28,6 @@ defaultEntryPoints = ["http", "https"]
 
 [acme.httpChallenge]
   entryPoint = "http"
-
-[retry]
 
 [docker]
   domain = "devslash.me"
