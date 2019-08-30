@@ -119,3 +119,4 @@ mattermost/config/config.json
 
 Pipfile
 mattermost/mattermost.env
+traefik.toml

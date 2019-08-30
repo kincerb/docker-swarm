@@ -28,14 +28,18 @@ services:
         window: 10s
 
   app:
-    image: kincerb/mattermost:5.7.0
+    image: kincerb/mattermost:5.14.1
     depends_on:
       - db
     networks:
       - internal
       - traefik-net
     volumes:
-      - mattermost-app:/mattermost
+      - mattermost-data:/mattermost/data
+      - mattermost-logs:/mattermost/logs
+      - mattermost-config:/mattermost/config
+      - mattermost-plugins:/mattermost/plugins
+      - mattermost-client-plugins:/mattermost/client/plugins
     secrets:
       - mattermost_user
       - mattermost_password
@@ -63,12 +67,28 @@ services:
         window: 10s
 
 volumes:
-  mattermost-app:
-    driver: rexray
+  mattermost-logs:
+    driver: "rexray/dobs"
     driver_opts:
-      size: 10
+      size: 1
+  mattermost-plugins:
+    driver: "rexray/dobs"
+    driver_opts:
+      size: 1
+  mattermost-client-plugins:
+    driver: "rexray/dobs"
+    driver_opts:
+      size: 1
+  mattermost-config:
+    driver: "rexray/dobs"
+    driver_opts:
+      size: 1
+  mattermost-data:
+    driver: "rexray/dobs"
+    driver_opts:
+      size: 5
   mattermost-db:
-    driver: rexray
+    driver: "rexray/dobs"
     driver_opts:
       size: 2
 

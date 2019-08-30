@@ -2,19 +2,25 @@ version: '3.3'
 
 services:
   traefik:
-    image: traefik:latest
+    image: traefik:alpine
     configs:
-      - source: traefik_config
+      - source: traefik_config_v3
         target: /etc/traefik/traefik.toml
     ports:
       - 80:80
       - 443:443
+      - 8080:8080
     networks:
       - traefik-net
     volumes:
       - traefik-acme:/acme/
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
+      labels:
+        - "traefik.backend=traefik"
+        - "traefik.port=8080"
+        - "traefik.frontend.rule=Host:traefik.devslash.me"
+        - "traefik.enable=true"
       mode: global
       placement:
         constraints:
@@ -34,7 +40,6 @@ services:
     deploy:
       labels:
         - "traefik.port=8080"
-        - "traefik.backend=visualizer-backend"
         - "traefik.frontend.rule=Host:docker.devslash.me"
         - "traefik.enable=true"
       placement:
@@ -42,12 +47,12 @@ services:
           - node.role == manager
 
 configs:
-  traefik_config:
-    file: ./etc/traefik/traefik.toml
+  traefik_config_v3:
+    external: true
 
 volumes:
   traefik-acme:
-    driver: rexray
+    driver: "rexray/dobs"
     driver_opts:
       size: 2
 
